@@ -1,0 +1,63 @@
+stages:
+  - build
+  - test
+  - report
+
+variables:
+  MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
+  MAVEN_CLI_OPTS: "-s .m2/settings.xml -DskipTests"
+
+cache:
+  paths:
+    - .m2/repository/
+
+build:
+  stage: build
+  image: maven:3.8.1-openjdk-8-slim
+  script:
+    - mvn clean compile
+  artifacts:
+    paths:
+      - target/classes/
+    expire_in: 1 hour
+  only:
+    - merge_requests
+    - main
+    - develop
+
+test:
+  stage: test
+  image: maven:3.8.1-openjdk-8-slim
+  dependencies:
+    - build
+  script:
+    - mvn test -Dtest="Loginpage.Amazonsearch" -DuseSystemClassLoader=false
+  artifacts:
+    when: always
+    paths:
+      - target/surefire-reports/
+      - target/test-classes/
+    reports:
+      junit: target/surefire-reports/TEST-*.xml
+    expire_in: 30 days
+  only:
+    - merge_requests
+    - main
+    - develop
+
+test_report:
+  stage: report
+  image: maven:3.8.1-openjdk-8-slim
+  dependencies:
+    - test
+  script:
+    - mvn surefire-report:report
+  artifacts:
+    paths:
+      - target/site/surefire-report.html
+    expire_in: 30 days
+  when: on_success
+  only:
+    - merge_requests
+    - main
+    - develop

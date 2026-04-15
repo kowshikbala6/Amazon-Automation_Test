@@ -73,6 +73,7 @@ public class Amazonsearch {
     public void tearDown() {
         System.out.println("🛑 Closing browser...");
         if (driver != null) {
+            //test
             driver.quit();
         }
     }

@@ -71,7 +71,8 @@ public class Amazonsearch {
 
     @AfterTest
     public void tearDown() {
-        System.out.println("🛑 Closing browser...");
+System.out.println("🛑 Closing browser...");
+
         if (driver != null) {
             //test
             driver.quit();

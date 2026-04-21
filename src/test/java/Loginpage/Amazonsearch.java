@@ -12,8 +12,6 @@ import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 
-import io.github.bonigarcia.wdm.WebDriverManager;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -22,36 +20,31 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import static java.lang.Thread.sleep;
-
 public class Amazonsearch {
     private WebDriver driver;
     private WebDriverWait wait;
 
     @BeforeTest
     public void setup() {
-        System.out.println("🚀 Initializing WebDriver using WebDriverManager...");
+        System.out.println("🚀 Initializing WebDriver using Selenium Manager to resolve driver...");
         try {
-            WebDriverManager.chromedriver().setup();
-
             ChromeOptions options = new ChromeOptions();
-            // When running in CI (or headless), enable headless and disable sandbox
-            // Comment out headless for local debugging
-            // options.addArguments("--headless=new");
             // Allow remote origins for newer Chrome/ChromeDriver versions
             options.addArguments("--remote-allow-origins=*");
             options.addArguments("--disable-gpu");
             options.addArguments("--no-sandbox");
             options.addArguments("--disable-dev-shm-usage");
+            // Uncomment the next line if you need headless mode in CI
+            // options.addArguments("--headless=new");
 
+            // Let Selenium Manager resolve and provide the matching ChromeDriver
             this.driver = new ChromeDriver(options);
             this.driver.manage().window().maximize();
             this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         } catch (Exception e) {
             System.err.println("❌ Failed to start ChromeDriver session: " + e.getMessage());
-            // Print stacktrace to help diagnose 'session not created' errors
             e.printStackTrace();
-            throw e;
+            throw new RuntimeException(e);
         }
     }
 
